@@ -226,3 +226,90 @@ print(pd.merge(df1, df2, on="id"))
 
 print("Łączenie za pomocą concat:")
 print(pd.concat([df1, df2], ignore_index=True))
+
+# 41
+df["total score"] = df["math score"] + df["reading score"] + df["writing score"]
+
+print("Wyniki uczniów wraz z sumą punktów:")
+print(df[["math score", "reading score", "writing score", "total score"]].head())
+
+# 42
+df["math score doubled"] = df["math score"].apply(lambda x: x * 2)
+
+print("Wyniki z matematyki przed i po podwojeniu:")
+print(df[["math score", "math score doubled"]].head())
+
+# 43
+for fragment in pd.read_csv("StudentsPerformance.csv", chunksize=200):
+    print("Liczba wierszy w części:", len(fragment))
+
+# 44
+srednia_pandas = df["math score"].mean()
+srednia_numpy = np.mean(df["math score"])
+
+print("Średnia obliczona za pomocą pandas:", srednia_pandas)
+print("Średnia obliczona za pomocą NumPy:", srednia_numpy)
+
+# 45
+mediana_pandas = df["math score"].median()
+mediana_numpy = np.median(df["math score"])
+
+print("Mediana obliczona za pomocą pandas:", mediana_pandas)
+print("Mediana obliczona za pomocą NumPy:", mediana_numpy)
+
+# 46
+odchylenie_pandas = df["math score"].std()
+odchylenie_numpy = np.std(df["math score"], ddof=1)
+
+print("Odchylenie standardowe pandas:", odchylenie_pandas)
+print("Odchylenie standardowe NumPy:", odchylenie_numpy)
+
+# 47
+wariancja_pandas = df["math score"].var()
+wariancja_numpy = np.var(df["math score"], ddof=1)
+
+print("Wariancja obliczona za pomocą pandas:", wariancja_pandas)
+print("Wariancja obliczona za pomocą NumPy:", wariancja_numpy)
+
+print("Kwadrat odchylenia standardowego:", odchylenie_pandas ** 2)
+
+# 48
+korelacja_pandas = df["math score"].corr(df["reading score"])
+
+korelacja_numpy = np.corrcoef(
+    df["math score"],
+    df["reading score"]
+)[0, 1]
+
+print("Korelacja Pearsona pandas:", korelacja_pandas)
+print("Korelacja Pearsona NumPy:", korelacja_numpy)
+
+# 49
+kowariancja_pandas = df["math score"].cov(df["reading score"])
+
+kowariancja_numpy = np.cov(
+    df["math score"],
+    df["reading score"],
+    ddof=1
+)[0, 1]
+
+print("Kowariancja pandas:", kowariancja_pandas)
+print("Kowariancja NumPy:", kowariancja_numpy)
+
+# PODSUMOWANIE
+
+podsumowanie = df[["math score", "reading score"]].agg(
+    ["mean", "median", "std"]
+)
+
+print("Podsumowanie statystyk:")
+print(podsumowanie)
+
+print("\nKorelacja:", korelacja_pandas)
+print("Kowariancja:", kowariancja_pandas)
+
+print("\nWnioski:")
+print("Średnie i mediany wyników pokazują przeciętny poziom osiągnięć uczniów.")
+print("Odchylenie standardowe wskazuje na zróżnicowanie wyników.")
+print("Silna dodatnia korelacja oznacza, że wyniki z matematyki i czytania są ze sobą powiązane.")
+print("Dodatnia kowariancja potwierdza, że obie zmienne mają tendencję do wzrostu razem.")
