@@ -2,6 +2,7 @@
 
 # 1
 import pandas as pd
+import numpy as np
 
 # 2
 dane = {
@@ -28,53 +29,68 @@ print(sciezka)
 
 df = pd.read_csv(f"{sciezka}/StudentsPerformance.csv")
 
+
 # 5
-print(df.head())
+print(df.T)
 
 # 6
-print(df.tail())
+print(df.head(10))
 
 # 7
-df.info()
+print(df.tail(10))
 
 # 8
-print(df.shape)
+df.info()
 
 # 9
-print(df.describe())
+print(df.shape)
 
 # 10
-print(df.describe(include="str"))
+print(df.describe())
 
 # 11
-print(df.isnull().sum())
+print(df.describe(include="str"))
 
 # 12
-print(df["math score"])
+df = df.dropna()
+print("Liczba brakujacych wartosci po usunieciu:")
+print(df.isnull().sum())
 
 # 13
+print(df["math score"])
 print(df[["gender", "math score", "reading score", "writing score"]])
-
-# 14
 print(df.iloc[0])
-
-# 15
 print(df.iloc[0:5])
-
-# 16
 print(df.loc[0])
-
-# 17
 print(df.loc[0:4])
-
-# 18
 print(df.loc[0:4, "math score"])
-
-# 19
 print(df.loc[:, ["gender", "math score", "writing score"]])
 
-# 20
+# 14
 print(df[df["math score"] >= 90])
+
+# 15
+print(df[(df["math score"] >= 90) & (df["gender"] == "female")])
+
+# 16
+print(df[df["parental level of education"].str.contains("college", case=False, na=False)])
+
+# 17
+print(df[~df["parental level of education"].str.contains("college", case=False, na=False)])
+
+# 18
+df["average score"] = df[["math score", "reading score", "writing score"]].mean(axis=1)
+print(df[["math score", "reading score", "writing score", "average score"]])
+
+# 19
+df_temp = df.copy()
+df_temp["temporary column"] = 1
+df_temp = df_temp.drop(columns=["temporary column"])
+print(df_temp.head())
+
+# 20
+df_renamed = df.rename(columns={"math score": "math_score"})
+print(df_renamed.head())
 
 # 21
 df.to_csv("StudentsPerformance_zapis.csv", index=False)
@@ -121,8 +137,92 @@ print(df.groupby("gender").mean(numeric_only=True))
 
 # 30
 print("Statystyki wyników według płci:")
-print(df.groupby("gender").agg({
+wyniki = df.groupby("gender").agg({
     "math score": "mean",
     "reading score": "mean",
     "writing score": ["median", "count"]
-}))
+})
+print(wyniki)
+
+# 31
+print("Nazwy kolumn MultiIndex:")
+print(wyniki.columns)
+
+# 32
+print("Sortowanie według średniej z matematyki:")
+print(wyniki.sort_values(by=("math score", "mean"), ascending=False))
+
+# 33
+tabela = pd.pivot_table(
+    df,
+    values="math score",
+    index="gender",
+    columns="test preparation course",
+    aggfunc="mean"
+)
+
+print("Tabela przestawna:")
+print(tabela)
+
+# 34
+print("Indeksy tabeli przestawnej:")
+print(tabela.index)
+
+print("Kolumny tabeli przestawnej:")
+print(tabela.columns)
+
+# 35
+tabela_multi = pd.pivot_table(
+    df,
+    values=["math score", "reading score"],
+    index=["gender", "test preparation course"],
+    columns=["lunch"],
+    aggfunc="mean"
+)
+
+print("Tabela przestawna MultiIndex:")
+print(tabela_multi)
+
+# 36
+import matplotlib.pyplot as plt
+
+# 37
+# %matplotlib inline
+# W pliku .py wykresy wyswietlamy za pomoca plt.show()
+
+# 38
+tabela.plot(kind="bar")
+
+plt.title("Sredni wynik z matematyki wedlug plci i kursu")
+plt.xlabel("Plec")
+plt.ylabel("Sredni wynik")
+
+plt.tight_layout()
+plt.show()
+
+# 39
+df["math score"].plot(kind="hist", bins=10)
+
+plt.title("Rozklad wynikow z matematyki")
+plt.xlabel("Wynik")
+plt.ylabel("Liczba uczniow")
+
+plt.tight_layout()
+plt.show()
+
+# 40
+df1 = pd.DataFrame({
+    "id": [1, 2],
+    "imie": ["Anna", "Jan"]
+})
+
+df2 = pd.DataFrame({
+    "id": [1, 2],
+    "wiek": [20, 22]
+})
+
+print("Łączenie za pomocą merge:")
+print(pd.merge(df1, df2, on="id"))
+
+print("Łączenie za pomocą concat:")
+print(pd.concat([df1, df2], ignore_index=True))
