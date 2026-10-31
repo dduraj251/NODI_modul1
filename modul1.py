@@ -43,3 +43,35 @@ print(df.shape)
 # 9
 print(df.describe())
 
+# 10
+print(df.describe(include="str"))
+
+# 11
+print(df.isnull().sum())
+
+# 12
+print(df["math score"])
+
+# 13
+print(df[["gender", "math score", "reading score", "writing score"]])
+
+# 14
+print(df.iloc[0])
+
+# 15
+print(df.iloc[0:5])
+
+# 16
+print(df.loc[0])
+
+# 17
+print(df.loc[0:4])
+
+# 18
+print(df.loc[0:4, "math score"])
+
+# 19
+print(df.loc[:, ["gender", "math score", "writing score"]])
+
+# 20
+print(df[df["math score"] >= 90])
